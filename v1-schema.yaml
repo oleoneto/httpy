@@ -1,0 +1,32 @@
+version: "1"
+
+global:
+  # HTTP request timeout (no default). Requests can define their own timeouts.
+  timeout: 10s
+
+# Array of HTTP requests to be performed
+requests:
+  - name: Example
+    # HTTP request timeout (no default). Overrides `global.timeout`
+    timeout: 5s
+    # HTTP scheme. One of: [http, https]
+    scheme: https
+    # HTTP request URL (no default)
+    url: example.com
+    # HTTP request path (no default)
+    path: /comments
+    # HTTP request query (no default)
+    query:
+      q: site
+    # HTTP request method (default: GET)
+    method: GET
+    # HTTP request headers
+    headers: {}
+    # HTTP request cookies
+    cookies: {}
+    # HTTP request body
+    body: {}
+    # Allows request to be skipped (default: false)
+    skip: false
+    # Discards response. Prevents it from being persisted in filesystem
+    skipPersistence: false

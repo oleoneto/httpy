@@ -1,0 +1,30 @@
+global:
+  timeout: 10s
+requests:
+  - name: Datamuse - Related to Ringing in the Ears
+    scheme: https
+    url: api.datamuse.com
+    path: /words
+    query:
+      ml: "ringing+in+the+ears"
+    method: GET
+    timeout: 2s
+    skip: true
+  - name: Datamuse - Related to Ocean
+    scheme: https
+    url: api.datamuse.com
+    path: /words
+    query:
+      ml: "ocean"
+    method: GET
+  - name: example.com
+    scheme: https
+    url: example.com
+    method: GET
+  - name: JSON Placeholder (Comments)
+    scheme: https
+    url: jsonplaceholder.typicode.com
+    path: /comments
+    query:
+      postId: "1"
+    method: GET

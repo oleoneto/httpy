@@ -1,0 +1,11 @@
+requests:
+  - name: JSON Placeholder (Comments)
+    scheme: https
+    url: jsonplaceholder.typicode.com
+    path: /comments
+    query:
+      postId: "1"
+    method: GET
+    repeat:
+      onInterval: 3s
+    skip: false
