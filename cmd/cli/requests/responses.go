@@ -59,21 +59,25 @@ type ProcessResponseOptions struct {
 }
 
 type (
-	Response struct {
-		url             *url.URL       `yaml:"-" json:"-"`
-		response        *http.Response `yaml:"-" json:"-"`
-		skipPersistence bool           `yaml:"-" json:"-"`
-
-		// Public API
-		Name    string              `yaml:"name,omitempty" json:"name,omitempty"`
-		URL     string              `yaml:"url,omitempty" json:"url,omitempty"`
-		Status  string              `yaml:"status,omitempty" json:"status,omitempty"`
-		Headers map[string][]string `yaml:"headers,omitempty" json:"headers,omitempty"` // TODO: Improve typing
-		Body    any                 `yaml:"body,omitempty" json:"body,omitempty"`
-		Error   error               `yaml:"-,omitempty" json:"-,omitempty"` // TODO: Consider omitting field
-	}
-
 	Responses struct {
 		Responses []Response `yaml:"responses" json:"responses"`
+	}
+
+	Response struct {
+		// Private identifier and sort key
+		Id string `yaml:"id,omitempty" json:"id,omitempty"`
+
+		url             *url.URL       `yaml:"-" json:"-"`
+		response        *http.Response `yaml:"-" json:"-"`
+		headers         map[string][]string
+		skipPersistence bool `yaml:"-" json:"-"`
+
+		// Public API
+		Name    string `yaml:"name,omitempty" json:"name,omitempty"`
+		URL     string `yaml:"url,omitempty" json:"url,omitempty"`
+		Headers any    `yaml:"headers,omitempty" json:"headers,omitempty"` // TODO: Improve typing
+		Status  string `yaml:"status,omitempty" json:"status,omitempty"`
+		Body    any    `yaml:"body,omitempty" json:"body,omitempty"`
+		Error   error  `yaml:"-,omitempty" json:"-,omitempty"` // TODO: Consider omitting field
 	}
 )

@@ -3,6 +3,7 @@ package requests
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oleoneto/go-toolkit/helpers"
 )
 
@@ -10,6 +11,11 @@ func ParseSchema(debugFunc func(...any), in []byte, parser func([]byte, any) err
 	debugFunc(helpers.FuncName())
 
 	err = parser(in, &data)
+
+	for idx := range data.Requests {
+		data.Requests[idx].id = uuid.New().String()
+	}
+
 	return
 }
 

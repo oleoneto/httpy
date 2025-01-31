@@ -47,6 +47,7 @@ func MakeRequests(debugFunc func(...any), in Schema, client *http.Client, execCh
 		body, jerr := json.Marshal(req.Body)
 		if jerr != nil {
 			execChan <- Response{
+				Id:              req.id,
 				url:             endpoint,
 				response:        nil,
 				skipPersistence: req.SkipPersistence,
@@ -68,51 +69,56 @@ func MakeRequests(debugFunc func(...any), in Schema, client *http.Client, execCh
 		}
 
 		// MARK: Send Request
-
-		go func() {
-			if req.Timeout != nil {
-				client.Timeout = *req.Timeout
-			}
-
-			debugFunc(helpers.FuncName(), "Timeout set to", client.Timeout)
-
-			res, cerr := client.Do(&http.Request{
-				Method: req.Method,
-				URL:    endpoint,
-				Header: headers,
-				Body:   httpclient.NewBody(body),
-			})
-
-			response := Response{
-				url:             endpoint,
-				response:        res,
-				skipPersistence: req.SkipPersistence,
-
-				// Public API
-				Name:  req.Name,
-				URL:   endpoint.String(),
-				Error: cerr,
-			}
-
-			if cerr == nil && res.Body != nil {
-				response.Status = res.Status  // Fails if res.Body == nil OR cerr != nil
-				response.Headers = res.Header // Fails if res.Body == nil OR cerr != nil
-
-				// Extract response body
-				// https://stackoverflow.com/questions/38673673/access-http-response-as-string-in-go
-				response.Body, response.Error = io.ReadAll(res.Body)
-
-				defer res.Body.Close()
-			}
-
-			execChan <- response
-		}()
+		go sendRequest(req, client, debugFunc, endpoint, headers, body, execChan)
 	}
 
 	return count
 }
 
+func sendRequest(req Request, client *http.Client, debugFunc func(...any), endpoint *url.URL, headers http.Header, body []byte, execChan chan Response) {
+	if req.Timeout != nil {
+		client.Timeout = *req.Timeout
+	}
+
+	debugFunc(helpers.FuncName(), "Timeout set to", client.Timeout)
+
+	res, cerr := client.Do(&http.Request{
+		Method: req.Method,
+		URL:    endpoint,
+		Header: headers,
+		Body:   httpclient.NewBody(body),
+	})
+
+	response := Response{
+		Id:              req.id,
+		url:             endpoint,
+		response:        res,
+		skipPersistence: req.SkipPersistence,
+
+		// Public API
+		Name:  req.Name,
+		URL:   endpoint.String(),
+		Error: cerr,
+	}
+
+	// TODO: Implement error handling
+	// if cerr != nil {}
+
+	if cerr == nil && res.Body != nil {
+		// Extract response body
+		// https://stackoverflow.com/questions/38673673/access-http-response-as-string-in-go
+		response.Body, response.Error = io.ReadAll(res.Body)
+
+		defer res.Body.Close()
+	}
+
+	execChan <- response
+}
+
 type Request struct {
+	// Private identifier and sort key
+	id string
+
 	// A name to identify the request (not checked for uniqueness)
 	Name string `yaml:"name,omitempty" json:"name,omitempty"`
 
