@@ -1,12 +1,15 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
 
 	toolkit "github.com/oleoneto/go-toolkit/cli"
+	"github.com/oleoneto/mock-http/pkg/schema"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 func BeforeHook(state toolkit.CommandState) func(cmd *cobra.Command, args []string) {
@@ -51,3 +54,28 @@ func (c *State) ConnectDatabase(cmd *cobra.Command, args []string) {
 	c.Database = db
 }
 */
+
+type OutputFormat struct{ *toolkit.FlagEnum }
+
+// Supported formats:
+// - silent
+// - json
+// - yaml
+func (f *OutputFormat) ProcessResponseOptions() schema.ProcessingOptions {
+	switch f.FlagEnum.String() {
+	case "yaml":
+		return schema.ProcessingOptions{
+			// PersistenceFunc:        os.WriteFile,
+			PersistenceMarshalFunc: yaml.Marshal,
+			BodyMarshalFunc:        schema.BodyMarshalFunc,
+			Plugins:                plugins,
+		}
+	default:
+		return schema.ProcessingOptions{
+			// PersistenceFunc:        os.WriteFile,
+			PersistenceMarshalFunc: json.Marshal,
+			BodyMarshalFunc:        schema.BodyMarshalFunc,
+			Plugins:                plugins,
+		}
+	}
+}

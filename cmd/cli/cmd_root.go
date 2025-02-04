@@ -1,33 +1,48 @@
 package cli
 
 import (
-	"embed"
+	"os"
+	"reflect"
+	"strconv"
+	"time"
 
 	toolkit "github.com/oleoneto/go-toolkit/cli"
-	log "github.com/sirupsen/logrus"
+	"github.com/oleoneto/mock-http/pkg"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var RootCmd = &cobra.Command{
-	Use:   "cli",
-	Short: "CLI, a cli tool.",
-	// PersistentPreRun: BeforeHook(state), // TODO: Replace command
-	// PersistentPostRun: AfterHook(state), // TODO: Replace command
-	PostRun: func(cmd *cobra.Command, args []string) {
-		if buildHash != "" {
-			log.Debug("build", buildHash)
-		}
-	},
-	Run: func(cmd *cobra.Command, args []string) { cmd.Help() },
+	Use:     "cli",
+	Short:   "CLI, a cli tool.",
+	PostRun: func(cmd *cobra.Command, args []string) {},
+	Run:     func(cmd *cobra.Command, args []string) { cmd.Help() },
 }
 
-func Execute(vfs embed.FS, buildHash string) error {
-	// virtualFS = vfs
+func Execute(config pkg.CLIConfig) error {
+	plugins = config.Plugins
+
+	if config.DefaultTimeout != nil {
+		globalTimeout = *config.DefaultTimeout
+	}
+
 	return RootCmd.Execute()
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	logrus.SetLevel(func() logrus.Level {
+		var base logrus.Level = logrus.InfoLevel
+
+		s := os.Getenv("LOG_LEVEL")
+		level, err := strconv.Atoi(s)
+		if err == nil {
+			return logrus.Level(level)
+		}
+
+		return base
+	}())
+
+	cobra.OnInitialize(func() { /* config code */ })
 
 	RootCmd.AddCommand(VersionCmd)
 	RootCmd.AddCommand(RequestCmd)
@@ -35,36 +50,32 @@ func init() {
 	// MARK: Set up global flags
 	RootCmd.PersistentFlags().BoolVar(&state.Flags.VerboseLogging, "verbose", state.Flags.VerboseLogging, "enable detailed logging")
 	RootCmd.PersistentFlags().VarP(state.Flags.OutputFormat, "output", "o", "output format")
-	RootCmd.PersistentFlags().StringVarP(&state.Flags.OutputTemplate, "output-template", "y", state.Flags.OutputTemplate, "template (used when output format is 'gotemplate')")
 
-	RootCmd.Flags().VarP(&state.Flags.File, "file", "f", "")
-
-	// Migrator configuration
 	RootCmd.PersistentFlags().VarP(dbAdapter, "db-adapter", "a", "database adapter")
 	RootCmd.PersistentFlags().BoolVar(&state.Flags.TimeExecutions, "time", state.Flags.TimeExecutions, "time executions")
 }
 
 var (
-	// wherein dictionary files are stored
-	virtualFS embed.FS
-
-	buildHash string
-
 	dbAdapter = &toolkit.FlagEnum{
-		Allowed: []string{"postgresql", "sqlite3"},
+		Allowed: []string{"sqlite3"},
 		Default: "sqlite3",
+	}
+
+	outputFormat = OutputFormat{
+		&toolkit.FlagEnum{
+			Allowed: []string{"json", "yaml", "silent"},
+			Default: "yaml",
+		},
 	}
 
 	state = toolkit.CommandState{
 		Flags: toolkit.CommandFlags{
 			OutputTemplate: "",
-			OutputFormat: &toolkit.FlagEnum{
-				Allowed: []string{"plain", "json", "yaml", "table", "gotemplate", "silent"},
-				Default: "plain",
-			},
+			OutputFormat:   outputFormat.FlagEnum,
 		},
 	}
 
-	loggerFunc func(...any) = log.Infoln
-	debugFunc  func(...any) = log.Debugln
+	globalTimeout = 1 * time.Minute
+
+	plugins = make(map[string]reflect.Value)
 )
