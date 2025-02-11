@@ -48,8 +48,6 @@ requests:
       # ...
       expectations:
 
-        fail: true
-
         duration: 120ms
 
         # ...

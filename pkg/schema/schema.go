@@ -1,9 +1,12 @@
 package schema
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/oleoneto/go-toolkit/helpers"
@@ -76,11 +79,12 @@ func Send(client *http.Client, request Request) (*http.Response, error) {
 	return r, err
 }
 
-// Consume processes HTTP responses.
-func Consume(count int, options ProcessingOptions, sender <-chan ResponseWrapper /* send-only channel */) {
+// Process extracts HTTP responses.
+func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper /* send-only channel */) {
 	logrus.Debugln(helpers.FuncName())
 
 	var persistLater []Response
+	var sqlArgs []any
 
 	for range count {
 		select {
@@ -135,6 +139,17 @@ func Consume(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 
 			if responseWrapper.ShouldPersist() {
 				persistLater = append(persistLater, response)
+				sqlArgs = append(sqlArgs,
+					response.Name,
+					responseWrapper.Request.Method,
+					response.URL,
+					response.Status,
+					func() []byte {
+						b, _ := json.Marshal(response.Headers)
+						return b
+					}(),
+					response.Body,
+				)
 			}
 
 			// MARK: Run externally-defined tests
@@ -184,16 +199,49 @@ func Consume(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 		return
 	}
 
-	rBytes, err := options.PersistenceMarshalFunc(Responses{persistLater})
+	// MARK: Database Persistence
+
+	if options.SQLPersistenceFunc == nil {
+		return
+	}
+
+	values := func() string {
+		var v string
+		numFields := 6
+		for idx := range count {
+			v += "("
+			v += helpers.EnumerateArgsOffset(numFields, numFields*idx, func(i, _ int) string { return fmt.Sprintf("$%d", i) })
+			v += "), "
+		}
+
+		return strings.TrimSuffix(strings.TrimSpace(v), ",")
+	}()
+
+	query := fmt.Sprintf(`
+		INSERT INTO responses(name, method, url, status_code, headers, body)
+		VALUES %s`,
+		values,
+	)
+
+	_, err := options.SQLPersistenceFunc(context.TODO(), query, sqlArgs...)
+	if err != nil {
+		logrus.Errorln(err)
+	}
+
+	// MARK: File Persistence
+
+	if options.FilePersistenceMarshalFunc == nil || options.FilePersistenceFunc == nil || options.FilePersistenceNamingFunc == nil {
+		logrus.Debugln("Persistence options not set.")
+		return
+	}
+
+	rBytes, err := options.FilePersistenceMarshalFunc(Responses{persistLater})
 	if err != nil {
 		logrus.Errorln(err)
 		return
 	}
 
-	// Persist response:
-	if options.PersistenceFunc != nil {
-		options.PersistenceFunc(rBytes)
-	}
+	options.FilePersistenceFunc(options.FilePersistenceNamingFunc(), rBytes, 0755)
 }
 
 func BodyMarshalFunc(raw any, contentType string) (any, error) {

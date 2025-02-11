@@ -32,9 +32,11 @@ var RequestCmd = &cobra.Command{
 			client.Timeout = *file.Global.Timeout
 		}
 
+		count := schema.Execute(file, client, json.Marshal /* TODO: check this */, watcher)
+
 		// Send Requests + Read Responses
-		schema.Consume(
-			schema.Execute(file, client, json.Marshal /* TODO: check this */, watcher),
+		schema.Process(
+			count,
 			outputFormat.ProcessResponseOptions(),
 			watcher,
 		)

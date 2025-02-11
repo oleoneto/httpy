@@ -8,19 +8,22 @@ import (
 
 	toolkit "github.com/oleoneto/go-toolkit/cli"
 	"github.com/oleoneto/mock-http/pkg"
+	"github.com/oleoneto/mock-http/pkg/dbsql"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var RootCmd = &cobra.Command{
-	Use:     "cli",
-	Short:   "CLI, a cli tool.",
-	PostRun: func(cmd *cobra.Command, args []string) {},
-	Run:     func(cmd *cobra.Command, args []string) { cmd.Help() },
+	Use:              "mockhttp",
+	Short:            "Mock HTTP is a CLI tool for making HTTP requests",
+	PersistentPreRun: DatabaseConnect,
+	PostRun:          func(cmd *cobra.Command, args []string) {},
+	Run:              func(cmd *cobra.Command, args []string) { cmd.Help() },
 }
 
 func Execute(config pkg.CLIConfig) error {
 	plugins = config.Plugins
+	sqlSchema = config.SQLSchema
 
 	if config.DefaultTimeout != nil {
 		globalTimeout = *config.DefaultTimeout
@@ -78,4 +81,8 @@ var (
 	globalTimeout = 1 * time.Minute
 
 	plugins = make(map[string]reflect.Value)
+
+	sqlSchema []byte
+
+	database dbsql.SqlBackend
 )

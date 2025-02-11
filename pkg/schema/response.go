@@ -1,7 +1,10 @@
 package schema
 
 import (
+	"context"
+	"database/sql"
 	"net/http"
+	"os"
 	"reflect"
 )
 
@@ -53,8 +56,11 @@ type ProcessingOptions struct {
 
 	BodyMarshalFunc func(body any, contentType string) (any, error)
 
-	PersistenceMarshalFunc func(any) ([]byte, error)
-	PersistenceFunc        func(data []byte) error
+	FilePersistenceMarshalFunc func(any) ([]byte, error)
+	FilePersistenceFunc        func(name string, data []byte, perm os.FileMode) error
+	FilePersistenceNamingFunc  func() string
+
+	SQLPersistenceFunc func(context.Context, string, ...any) (sql.Result, error)
 }
 
 func (r *ResponseWrapper) ShouldPersist() bool { return !r.Request.SkipPersistence }

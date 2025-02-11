@@ -1,15 +1,17 @@
 package cli
 
 import (
-	"encoding/json"
+	"context"
+	"database/sql"
 	"fmt"
 	"os"
+	"reflect"
 	"time"
 
 	toolkit "github.com/oleoneto/go-toolkit/cli"
+	"github.com/oleoneto/mock-http/pkg/dbsql"
 	"github.com/oleoneto/mock-http/pkg/schema"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 func BeforeHook(state toolkit.CommandState) func(cmd *cobra.Command, args []string) {
@@ -37,23 +39,30 @@ func AfterHook(state toolkit.CommandState) func(cmd *cobra.Command, args []strin
 	}
 }
 
-/*
-func (c *State) ConnectDatabase(cmd *cobra.Command, args []string) {
-	dbpath := viper.Get("database.path")
-
-	db, err := dbsql.ConnectDatabase(dbsql.DBConnectOptions{
-		Adapter:        dbsql.SQLAdapter(cmd.Flag("adapter").Value.String()),
-		DSN:            *c.Flags.DatabaseURL,
-		Filename:       dbpath.(string),
-		VerboseLogging: c.Flags.VerboseLogging,
+func DatabaseConnect(cmd *cobra.Command, args []string) {
+	var err error
+	database, err = dbsql.ConnectDatabase(dbsql.DBConnectOptions{
+		VerboseLogging: state.Flags.VerboseLogging,
+		Filename:       "mockhttp.sqlite3",
 	})
+
 	if err != nil {
 		panic(err)
 	}
 
-	c.Database = db
+	ctx := context.TODO()
+
+	row := database.QueryRowContext(
+		ctx,
+		`SELECT s.name FROM sqlite_schema s WHERE s.type = 'table' AND s.name = 'responses' LIMIT 1`,
+	)
+
+	if reflect.DeepEqual(row.Scan(nil), sql.ErrNoRows) {
+		if _, err = database.ExecContext(ctx, string(sqlSchema)); err != nil {
+			panic(err)
+		}
+	}
 }
-*/
 
 type OutputFormat struct{ *toolkit.FlagEnum }
 
@@ -65,17 +74,21 @@ func (f *OutputFormat) ProcessResponseOptions() schema.ProcessingOptions {
 	switch f.FlagEnum.String() {
 	case "yaml":
 		return schema.ProcessingOptions{
-			// PersistenceFunc:        os.WriteFile,
-			PersistenceMarshalFunc: yaml.Marshal,
-			BodyMarshalFunc:        schema.BodyMarshalFunc,
-			Plugins:                plugins,
+			SQLPersistenceFunc: database.ExecContext,
+			BodyMarshalFunc:    schema.BodyMarshalFunc,
+			Plugins:            plugins,
+			// FilePersistenceFunc:        os.WriteFile,
+			// FilePersistenceMarshalFunc: yaml.Marshal,
+			// FilePersistenceNamingFunc: func() string { return time.Now(time.RFC3339) + ".yaml" }
 		}
 	default:
 		return schema.ProcessingOptions{
-			// PersistenceFunc:        os.WriteFile,
-			PersistenceMarshalFunc: json.Marshal,
-			BodyMarshalFunc:        schema.BodyMarshalFunc,
-			Plugins:                plugins,
+			SQLPersistenceFunc: database.ExecContext,
+			BodyMarshalFunc:    schema.BodyMarshalFunc,
+			Plugins:            plugins,
+			// FilePersistenceFunc:        os.WriteFile,
+			// FilePersistenceMarshalFunc: json.Marshal,
+			// FilePersistenceNamingFunc: func() string { return time.Now(time.RFC3339) + ".json" }
 		}
 	}
 }

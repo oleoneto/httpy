@@ -14,6 +14,5 @@ type SqlBackend interface {
 
 type DBConnectOptions struct {
 	VerboseLogging bool
-	DB             SqlBackend
 	Filename       string // i.e "db.sqlite3"
 }
