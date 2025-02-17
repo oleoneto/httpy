@@ -2,6 +2,7 @@ package schema
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -149,6 +150,10 @@ func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 						return b
 					}(),
 					response.Body,
+					func() []byte {
+						b, _ := json.Marshal(responseWrapper.Request)
+						return b
+					}(),
 				)
 			}
 
@@ -205,28 +210,8 @@ func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 		return
 	}
 
-	values := func() string {
-		var v string
-		numFields := 6
-		for idx := range count {
-			v += "("
-			v += helpers.EnumerateArgsOffset(numFields, numFields*idx, func(i, _ int) string { return fmt.Sprintf("$%d", i) })
-			v += "), "
-		}
-
-		return strings.TrimSuffix(strings.TrimSpace(v), ",")
-	}()
-
-	query := fmt.Sprintf(`
-		INSERT INTO responses(name, method, url, status_code, headers, body)
-		VALUES %s`,
-		values,
-	)
-
-	_, err := options.SQLPersistenceFunc(context.TODO(), query, sqlArgs...)
-	if err != nil {
-		logrus.Errorln(err)
-	}
+	// Persist to SQL backend
+	PersistToSQL(count, options.SQLPersistenceFunc, sqlArgs...)
 
 	// MARK: File Persistence
 
@@ -258,6 +243,33 @@ func BodyMarshalFunc(raw any, contentType string) (any, error) {
 	default:
 		return raw, nil
 	}
+}
+
+func PersistToSQL(responseCount int, SQLFunc func(context.Context, string, ...any) (sql.Result, error), args ...any) error {
+	values := func() string {
+		var v string
+		var numFields = 7
+		for idx := range responseCount {
+			v += "("
+			v += helpers.EnumerateArgsOffset(numFields, numFields*idx, func(i, _ int) string { return fmt.Sprintf("$%d", i) })
+			v += "), "
+		}
+
+		return strings.TrimSuffix(strings.TrimSpace(v), ",")
+	}()
+
+	query := fmt.Sprintf(`
+		INSERT INTO responses(name, method, url, status_code, headers, body, request)
+		VALUES %s`,
+		values,
+	)
+
+	_, err := SQLFunc(context.TODO(), query, args...)
+	if err != nil {
+		logrus.Errorln(err)
+	}
+
+	return err
 }
 
 type Schema struct {

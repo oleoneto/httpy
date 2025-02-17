@@ -9,6 +9,7 @@ CREATE TABLE responses (
   headers TEXT,
   body TEXT,
   timeout_ms INTEGER,
+  request TEXT NOT NULL,
 
   CONSTRAINT http_status_code CHECK (status_code >= 100 AND status_code <= 599),
   CONSTRAINT http_method      CHECK (method IN ("GET", "PATCH", "POST", "PUT", "DELETE", "TRACE", "HEAD", "OPTIONS", "CONNECT")),
