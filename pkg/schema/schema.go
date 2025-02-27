@@ -43,7 +43,7 @@ func Execute(s Schema, client *http.Client, bodyDeserializerFunc func(any) ([]by
 				continue
 			}
 
-			fmt.Println(body)
+			logrus.Debugln(body)
 		}
 
 		// Perform request

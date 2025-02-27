@@ -49,6 +49,7 @@ func init() {
 
 	RootCmd.AddCommand(VersionCmd)
 	RootCmd.AddCommand(RequestCmd)
+	RootCmd.AddCommand(MockServerCmd)
 
 	// MARK: Set up global flags
 	RootCmd.PersistentFlags().BoolVar(&state.Flags.VerboseLogging, "verbose", state.Flags.VerboseLogging, "enable detailed logging")
