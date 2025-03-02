@@ -2,18 +2,56 @@ package main
 
 import (
 	"embed"
+	"log"
+	"os"
+	"reflect"
+	"time"
 
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/oleoneto/go-toolkit/helpers"
 	"github.com/oleoneto/mock-http/cmd/cli"
+	"github.com/oleoneto/mock-http/pkg"
+	"github.com/oleoneto/mock-http/pkg/extensions"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	cli.Execute(data, buildHash)
+	schema, err := sqlSchema.ReadFile("pkg/dbsql/schema.sql")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	LoadExtensions()
+
+	cli.Execute(pkg.CLIConfig{
+		Plugins:        plugins,
+		SQLSchema:      schema,
+		DefaultTimeout: helpers.PointerTo(1 * time.Minute),
+	})
 }
 
-var (
-	//go:embed data
-	data embed.FS
+var data []byte
+var plugins map[string]reflect.Value
 
-	buildHash string = ""
-)
+var supportedExtensions = []string{
+	"RequestTransformerFunc",
+	"ResponseTransformerFunc",
+	"ResponsePassesValidationFunc",
+}
+
+//go:embed pkg/dbsql/schema.sql
+var sqlSchema embed.FS
+
+func LoadExtensions() {
+	if filepath, ok := os.LookupEnv("PLUGINS_FILEPATH"); ok {
+		var err error
+		if data, err = os.ReadFile(filepath); err != nil {
+			panic(err)
+		}
+
+		plugins = extensions.Load(string(data), supportedExtensions)
+		for k, v := range plugins {
+			logrus.Warnln("Loaded extension:", k, v)
+		}
+	}
+}

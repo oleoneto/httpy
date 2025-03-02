@@ -1,0 +1,27 @@
+version: "1"
+
+# List of HTTP mock routes
+routes:
+  - name: Example
+
+    # HTTP request path (no default)
+    path: /comments
+
+    # HTTP request method (no default)
+    method: GET
+
+    # HTTP response body (no default)
+    body:
+      comments:
+        - id: 01JN443C15HRM89PSPX0Y2D68W
+          text: I disagree 😩. They didn't even mention the best parts of the product
+          parent_id: 01JN442DXJ41VTDPEG2MRTGYGG
+          created_at: 1740671306280
+
+        - id: 01JN442DXJ41VTDPEG2MRTGYGG
+          text: That was an epic feedback!
+          parent_id: null
+          created_at: 1740670558818
+
+    # HTTP response status code (no default)
+    status: 200

@@ -1,0 +1,12 @@
+requests:
+  - &baseRequest
+    name: JSON Placeholder - List Comments
+    scheme: &schme https
+    url: &url jsonplaceholder.typicode.com
+    path: &path /comments
+    method: &method GET
+    query:
+      postId: "1"
+    skip: false
+    timeout: 1m
+  - <<: *baseRequest

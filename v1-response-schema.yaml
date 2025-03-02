@@ -1,0 +1,760 @@
+responses:
+    - name: name
+      url: https://example.com?postId=1
+      status: 200 OK
+      headers: {}
+      body: {}
+      # Used to define
+      tests:
+        restults:
+          http:
+            status: 200
+            headers:
+              Content-Type:
+                - application/json
+              Server:
+                  - cloudflare
+---
+# Examples
+responses:
+  - name: Words related to ocean
+    url: https://api.datamuse.com/words?ml=ocean
+    status: 200 OK
+    headers:
+      Cache-Control:
+          - no-transform, max-age=86400
+      Content-Type:
+          - application/json
+      Date:
+          - Mon, 03 Feb 2025 20:29:41 GMT
+    body: |-
+      [
+       	{
+      		"word": "sea",
+      		"score": 30043556,
+      		"tags": [
+       			"syn",
+       			"n",
+       			"results_type:primary_rel"
+      		]
+       	},
+       	{
+      		"word": "expanse",
+      		"score": 20043409,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "oceanic",
+      		"score": 20043288,
+      		"tags": [
+       			"adj",
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "seabed",
+      		"score": 20042699,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seafloor",
+      		"score": 20042472,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "oceanographic",
+      		"score": 20042468,
+      		"tags": [
+       			"adj",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "pelagic",
+      		"score": 20042361,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "oceanography",
+      		"score": 20041960,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "marine",
+      		"score": 20041533,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "midstream",
+      		"score": 20041256,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "coast",
+      		"score": 20041204,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "pond",
+      		"score": 20040791,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "water",
+      		"score": 20037134,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seawater",
+      		"score": 20031279,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "waters",
+      		"score": 20017023,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seaway",
+      		"score": 20014109,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "bucket",
+      		"score": 20013788,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "marina",
+      		"score": 20013571,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seagoing",
+      		"score": 20009981,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "seafaring",
+      		"score": 20009928,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "maritime",
+      		"score": 20007919,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "naval",
+      		"score": 20007625,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "sealift",
+      		"score": 20006244,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "sailor",
+      		"score": 20004156,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seaman",
+      		"score": 20003847,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "navy",
+      		"score": 20003649,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "mer",
+      		"score": 19994328,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "shipping",
+      		"score": 19989997,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "liner",
+      		"score": 19985121,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "marines",
+      		"score": 19979106,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "surroundings",
+      		"score": 19971434,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "brine",
+      		"score": 19965015,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "mare",
+      		"score": 19952052,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "perimeter",
+      		"score": 19943203,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "periphery",
+      		"score": 19919002,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "strait",
+      		"score": 19900189,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "offshore",
+      		"score": 19896050,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "trademark",
+      		"score": 19874294,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "national",
+      		"score": 19868832,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "more",
+      		"score": 19854726,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "main",
+      		"score": 19852008,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "enroute",
+      		"score": 19837982,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "welter",
+      		"score": 19830809,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "yang",
+      		"score": 19823231,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "yat",
+      		"score": 19818093,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "indian",
+      		"score": 19809602,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "pacific",
+      		"score": 19797984,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "atlantic",
+      		"score": 19797435,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "maritimes",
+      		"score": 19765633,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "mariners",
+      		"score": 19728486,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "bedford",
+      		"score": 19001739,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "marin",
+      		"score": 18948100,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "oceana",
+      		"score": 18845983,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "bahr",
+      		"score": 17964489,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "mori",
+      		"score": 17953048,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "yeung",
+      		"score": 17881989,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "hoi",
+      		"score": 10043655,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "marinos",
+      		"score": 10043655,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "navies",
+      		"score": 10043655,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "sailors",
+      		"score": 10043655,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seafarers",
+      		"score": 10043655,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seamen",
+      		"score": 10043655,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seas",
+      		"score": 10043655,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "beach",
+      		"score": 10043650,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "shore",
+      		"score": 10043649,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "lagoon",
+      		"score": 10043648,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seawaters",
+      		"score": 10043647,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seashore",
+      		"score": 10043646,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "inland",
+      		"score": 10043643,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "intracoastal",
+      		"score": 10043642,
+      		"tags": [
+       			"n",
+       			"prop"
+      		]
+       	},
+       	{
+      		"word": "shoreline",
+      		"score": 10043641,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "coastal",
+      		"score": 10043640,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "gulf",
+      		"score": 10043639,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "coastline",
+      		"score": 10043638,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "lake",
+      		"score": 10043636,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "reef",
+      		"score": 10043635,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "shoreless",
+      		"score": 10043634,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "tideless",
+      		"score": 10043632,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "oceanward",
+      		"score": 10043631,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "underwater",
+      		"score": 10043630,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "oceanfront",
+      		"score": 10043629,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "river",
+      		"score": 10043627,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seascape",
+      		"score": 10043626,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "saltwater",
+      		"score": 10043624,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "plankton",
+      		"score": 10043623,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "waveless",
+      		"score": 10043622,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "whale",
+      		"score": 10043621,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "estuary",
+      		"score": 10043620,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seaside",
+      		"score": 10043619,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "whales",
+      		"score": 10043618,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "seafloors",
+      		"score": 10043617,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "undersea",
+      		"score": 10043616,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "sand",
+      		"score": 10043613,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "freshwater",
+      		"score": 10043612,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "coasts",
+      		"score": 10043611,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "tropical",
+      		"score": 10043610,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "shores",
+      		"score": 10043609,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "tidal",
+      		"score": 10043608,
+      		"tags": [
+       			"adj"
+      		]
+       	},
+       	{
+      		"word": "estuarial",
+      		"score": 10043607,
+      		"tags": [
+       			"n"
+      		]
+       	},
+       	{
+      		"word": "mountains",
+      		"score": 10043606,
+      		"tags": [
+       			"n"
+      		]
+       	}
+      ]
+    # tests:
+    #   results:
+    #     http:
+    #       status: 200
+    #       headers:
+    #         Content-Type:
+    #           - application/json
+    #         Server:
+    #             - cloudflare

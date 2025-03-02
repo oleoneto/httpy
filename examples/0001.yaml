@@ -1,7 +1,8 @@
 global:
   timeout: 10s
+
 requests:
-  - name: Datamuse - Related to Ringing in the Ears
+  - name: Datamuse - words related to `ringing in the ears`
     scheme: https
     url: api.datamuse.com
     path: /words
@@ -11,12 +12,15 @@ requests:
     timeout: 2s
     skip: true
     skipPersistence: true
-  - name: Datamuse - Related to Ocean
+
+  - name: Datamuse - words related to `ocean`
     scheme: https
     url: api.datamuse.com
     path: /words
     query:
       ml: "ocean"
     method: GET
-    # skipPersistence: true
-    # timeout: 5s
+    tests:
+      expectations:
+        http:
+          status: 400

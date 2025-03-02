@@ -17,3 +17,10 @@ module
 
 # Dependency directories (remove the comment below to include it)
 vendor/
+
+# Database files
+*.sqlite3
+*.sqlite3-*
+
+extensions/
+!pkg/extensions/
