@@ -45,6 +45,9 @@ func init() {
 		return base
 	}())
 
+	logrus.SetOutput(os.Stdout)
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+
 	cobra.OnInitialize(func() { /* config code */ })
 
 	RootCmd.AddCommand(VersionCmd)
