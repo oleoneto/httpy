@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/oleoneto/mock-http/pkg/schema"
+	"github.com/oleoneto/httpy/pkg/schema"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -37,13 +38,10 @@ var MockServerCmd = &cobra.Command{
 			err := c.Next()
 
 			logrus.WithFields(logrus.Fields{
-				"duration": time.Since(t),
-				"protocol": c.Protocol(),
-				"method":   c.Method(),
 				"ip":       c.IP(),
-				"path":     c.Path(),
 				"status":   c.Response().StatusCode(),
-			}).Infoln(c.Path())
+				"duration": time.Since(t),
+			}).Infoln(c.Method(), c.Path())
 
 			return err
 		})
@@ -60,7 +58,7 @@ var MockServerCmd = &cobra.Command{
 			})
 		}
 
-		// app.All("/*", func(c *fiber.Ctx) error { return c.SendStatus(http.StatusNotImplemented) })
+		app.All("/*", func(c *fiber.Ctx) error { return c.SendStatus(http.StatusNotImplemented) })
 
 		app.Listen(fmt.Sprintf("127.0.0.1:%d", serverPort))
 	},

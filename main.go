@@ -9,9 +9,9 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/oleoneto/go-toolkit/helpers"
-	"github.com/oleoneto/mock-http/cmd/cli"
-	"github.com/oleoneto/mock-http/pkg"
-	"github.com/oleoneto/mock-http/pkg/extensions"
+	"github.com/oleoneto/httpy/cmd/cli"
+	"github.com/oleoneto/httpy/pkg"
+	"github.com/oleoneto/httpy/pkg/extensions"
 	"github.com/sirupsen/logrus"
 )
 

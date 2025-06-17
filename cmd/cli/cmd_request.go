@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/oleoneto/go-toolkit/httpclient"
-	"github.com/oleoneto/mock-http/pkg/schema"
+	"github.com/oleoneto/httpy/pkg/schema"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )

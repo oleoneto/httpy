@@ -76,7 +76,11 @@ func Send(client *http.Client, request Request) (*http.Response, error) {
 		}(),
 	})
 
-	logrus.Debugln(helpers.FuncName(), "request sent...")
+	logrus.WithFields(logrus.Fields{
+		"url":  request.ParseURL().String(),
+		"name": request.Name,
+	}).Infoln("Request sent")
+
 	return r, err
 }
 
@@ -90,17 +94,30 @@ func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 	for range count {
 		select {
 		case responseWrapper := <-sender:
+			requestLogger := logrus.WithFields(logrus.Fields{
+				"url":  responseWrapper.Request.ParseURL().String(),
+				"name": responseWrapper.Request.Name,
+				"status": func() string {
+					if responseWrapper.Response == nil {
+						return ""
+					}
+					return responseWrapper.Response.Status
+				}(),
+			})
+
 			if responseWrapper.Error != nil {
-				logrus.Errorln(responseWrapper.Error)
+				requestLogger.Errorln(responseWrapper.Error.Error())
 				continue
 			}
 
-			logrus.Debugln("Response for:", responseWrapper.Request.Name)
+			requestLogger.Infoln("Response received")
 
 			if p, ok := options.Plugins["ResponseTransformerFunc"]; ok {
 				// NOTE: Proceed with caution
 				if transformer, ok := p.Interface().(ResponseTransformerFunc); ok {
-					logrus.Warnln("Running code for: ResponseTransformerFunc")
+					requestLogger.WithFields(logrus.Fields{
+						"func": "ResponseTransformerFunc",
+					}).Warnln("Running plugin code")
 					responseWrapper.Response = transformer(responseWrapper.Response)
 				}
 			}
@@ -123,7 +140,7 @@ func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 				// https://stackoverflow.com/questions/38673673/access-http-response-as-string-in-go
 				body, err := io.ReadAll(responseWrapper.Response.Body)
 				if err != nil {
-					logrus.Warnln(err)
+					requestLogger.Warnln(err)
 					continue
 				}
 
@@ -160,7 +177,7 @@ func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 			// MARK: Run externally-defined tests
 
 			if responseWrapper.Request.Tests == nil || responseWrapper.Request.Tests.Expectations.HTTP == nil {
-				fmt.Println("No tests to run...")
+				requestLogger.Debugln("No tests to run...")
 				continue
 			}
 
@@ -175,8 +192,9 @@ func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 					Duration *time.Duration
 				}) bool)
 				if ok {
-					logrus.Warnln("Running code for: ResponsePassesValidationFunc")
-					logrus.Warnln("Running tests for:", responseWrapper.Request.Name)
+					requestLogger.WithFields(logrus.Fields{
+						"func": "ResponsePassesValidationFunc",
+					}).Warnln("Running tests")
 
 					tester(responseWrapper.Response.Request, responseWrapper.Response, struct {
 						HTTP *struct {

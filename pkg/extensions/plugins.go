@@ -9,7 +9,7 @@ import (
 	"github.com/traefik/yaegi/stdlib"
 )
 
-var extensionsPackageName = "mock_http_extensions"
+var extensionsPackageName = "httpy_extensions"
 
 func Load(src string, names []string) map[string]reflect.Value {
 	interpreter := interp.New(interp.Options{Unrestricted: false})
