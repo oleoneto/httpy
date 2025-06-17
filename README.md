@@ -1,11 +1,11 @@
-# mock-http
-Mock HTTP is a CLI tool for making requests and mocking server responses
+# httpy
+HTTPy, a CLI tool for programmatically managing collections of HTTP requests.
 
 **Table of Contents**
-- [mock-http](#mock-http)
+- [httpy](#httpy)
   - [Installation](#installation)
   - [Commands](#commands)
-    - [mockhttp](#mockhttp)
+    - [httpy](#httpy)
     - [server](#server)
     - [http](#http)
     - [version](#version)
@@ -17,13 +17,15 @@ make install
 ```
 
 ## Commands
-Assume the installed binary is called `mockhttp`.
+Assume the installed binary is called `httpy`.
 
-### mockhttp
+### httpy
 ```
+HTTPy, a CLI tool for programmatically managing collections of HTTP requests
+
 Usage:
-  mockhttp [flags]
-  mockhttp [command]
+  httpy [flags]
+  httpy [command]
 
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
@@ -33,12 +35,12 @@ Available Commands:
   version     Shows the version of the CLI
 
 Flags:
-  -h, --help                help for mockhttp
+      --config-dir string   config directory (default "$HOME/.httpy")
+      --db-url string       database url (default "httpy.sqlite3")
+  -h, --help                help for httpy
   -o, --output string       output format (default "yaml")
       --time                time executions
       --verbose             enable detailed logging
-
-Use "mockhttp [command] --help" for more information about a command.
 ```
 
 ### server
@@ -46,18 +48,13 @@ Use "mockhttp [command] --help" for more information about a command.
 Run a mock HTTP server
 
 Usage:
-  mockhttp server [flags]
+  httpy server [flags]
 
 Flags:
   -f, --file string
   -h, --help          help for server
   -p, --port int       (default 3333)
   -r, --show-routes
-
-Global Flags:
-  -o, --output string       output format (default "yaml")
-      --time                time executions
-      --verbose             enable detailed logging
 ```
 
 ### http
@@ -65,16 +62,11 @@ Global Flags:
 Make HTTP requests
 
 Usage:
-  mockhttp http [flags]
+  httpy http [flags]
 
 Flags:
   -f, --file string
   -h, --help          help for http
-
-Global Flags:
-  -o, --output string       output format (default "yaml")
-      --time                time executions
-      --verbose             enable detailed logging
 ```
 
 ### version
@@ -82,16 +74,11 @@ Global Flags:
 Shows the version of the CLI
 
 Usage:
-  mockhttp version [flags]
+  httpy version [flags]
 
 Flags:
   -h, --help   help for version
-
-Global Flags:
-  -o, --output string       output format (default "yaml")
-      --time                time executions
-      --verbose             enable detailed logging
 ```
 
 ## To Do
-[Check out open issues](https://github.com/oleoneto/mock-http/issues).
+[Check out open issues](https://github.com/oleoneto/httpy/issues).
