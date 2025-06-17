@@ -4,7 +4,8 @@
 *.dll
 *.so
 *.dylib
-mock-http
+
+httpy
 
 # Test binary, built with `go test -c`
 *.test

@@ -1,4 +1,4 @@
-TARGET_FILE:=mock-http
+TARGET_FILE:=httpy
 BUILD_DIR=.build
 COVER_PROFILE_FILE="${BUILD_DIR}/go-cover.tmp"
 GOBIN := $(GOPATH)/bin
@@ -25,7 +25,7 @@ build: build-deps test
 	CGO_ENABLED=1 go build -tags "json1 fts5 foreign_keys math_functions" -o $(TARGET_FILE)
 
 install: build
-	cp $(TARGET_FILE) $(GOBIN)/$(TARGET_FILE)
+	cp $(TARGET_FILE) ~/.local/bin/$(TARGET_FILE)
 
 mk-build-dir: build
 	mkdir -p .build
