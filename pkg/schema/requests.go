@@ -100,7 +100,15 @@ func (r *Request) ParseURL() *url.URL /* TODO: Add error */ {
 		query = ""
 	}
 
-	url, err := url.Parse(r.Scheme + "://" + r.URL + r.Path + query)
+	// We may be in the presence of a raw url string
+	rawScheme, scheme := strings.Split(r.URL, "://"), ""
+	if len(rawScheme[0]) <= 5 {
+		scheme = ""
+	} else {
+		scheme = "http://"
+	}
+
+	url, err := url.Parse(scheme + r.URL + r.Path + query)
 	if err != nil {
 		log.Fatal(err)
 	}

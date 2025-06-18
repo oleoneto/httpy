@@ -39,7 +39,7 @@ func (v *Version) TableWriter() table.Writer {
 }
 
 var (
-	version = &Version{Major: "0", Minor: "1", Patch: "0-alpha"}
+	version = &Version{Major: "0", Minor: "2", Patch: "0-alpha"}
 
 	_ formatters.TableFormattable = (*Version)(nil)
 )

@@ -57,16 +57,21 @@ Flags:
   -r, --show-routes
 ```
 
-### http
+### fetch
 ```
 Make HTTP requests
 
 Usage:
-  httpy http [flags]
+  httpy fetch [flags]
 
 Flags:
-  -f, --file string
-  -h, --help          help for http
+      --body bytesBase64         http request body
+  -f, --file string              FILE or stdin
+      --headers stringToString   http headers (default [])
+  -h, --help                     help for fetch
+      --method string            http method (default "GET")
+      --name string              a name for this request (useful when persisting responses)
+      --url string               raw url (i.e. https://www.example.com/test)
 ```
 
 ### version

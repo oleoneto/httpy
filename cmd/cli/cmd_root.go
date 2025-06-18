@@ -57,7 +57,7 @@ func init() {
 	})
 
 	RootCmd.AddCommand(VersionCmd)
-	RootCmd.AddCommand(RequestCmd)
+	RootCmd.AddCommand(FetchCmd)
 	RootCmd.AddCommand(MockServerCmd)
 
 	// MARK: Set up global flags
