@@ -79,7 +79,7 @@ func Send(client *http.Client, request Request) (*http.Response, error) {
 	logrus.WithFields(logrus.Fields{
 		"url":  request.ParseURL().String(),
 		"name": request.Name,
-	}).Infoln("Request sent")
+	}).Debugln("Request sent")
 
 	return r, err
 }
@@ -110,7 +110,7 @@ func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 				continue
 			}
 
-			requestLogger.Infoln("Response received")
+			requestLogger.Debugln("Response received")
 
 			if p, ok := options.Plugins["ResponseTransformerFunc"]; ok {
 				// NOTE: Proceed with caution
@@ -151,6 +151,12 @@ func Process(count int, options ProcessingOptions, sender <-chan ResponseWrapper
 					b, err := options.BodyMarshalFunc(response.Body, response.Headers["Content-Type"][0])
 					if err == nil {
 						response.Body = b
+
+						if options.ShowResponseBody {
+							fmt.Println(string(b.([]byte)))
+							// TODO: Handle cases where response is JSON
+							// fmt.Println(helpers.JSONPrettyPrint(string(b.([]byte))))
+						}
 					}
 				}
 			}

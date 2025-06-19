@@ -3,6 +3,7 @@ package cli
 import (
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/oleoneto/go-toolkit/httpclient"
 	"github.com/oleoneto/httpy/pkg/schema"
@@ -11,8 +12,10 @@ import (
 )
 
 var FetchCmd = &cobra.Command{
-	Use:   "fetch",
-	Short: "Make HTTP requests",
+	Use:       "fetch",
+	Short:     "Make HTTP requests",
+	ValidArgs: []string{"url"},
+	Args:      cobra.MaximumNArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		fetchMode = func(cmd *cobra.Command) FetchMode {
 			if cmd.Flag("file").Changed {
@@ -22,6 +25,13 @@ var FetchCmd = &cobra.Command{
 		}(cmd)
 
 		if fetchMode == RawMode {
+			if len(args) != 1 {
+				log.Fatalln("missing required argument URL")
+				os.Exit(1)
+			}
+
+			httpRequest.URL = args[0]
+
 			return
 		}
 
@@ -29,7 +39,7 @@ var FetchCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		client := httpclient.New()
-		client.Timeout = globalTimeout
+		client.Timeout = httpyFlags.timeout
 
 		var file schema.Schema
 		var err error
@@ -70,13 +80,10 @@ var FetchCmd = &cobra.Command{
 func init() {
 	FetchCmd.Flags().VarP(&state.Flags.File, "file", "f", "FILE or stdin")
 
-	FetchCmd.Flags().StringVar(&httpRequest.URL, "url", httpRequest.URL, "raw url (i.e. https://www.example.com/test)")
 	FetchCmd.Flags().StringVar(&httpRequest.Method, "method", httpRequest.Method, "http method")
 	FetchCmd.Flags().StringToStringVar(&httpRequest.Headers, "headers", nil, "http headers")
 	FetchCmd.Flags().BytesBase64Var(&body, "body", body, "http request body")
 	FetchCmd.Flags().StringVar(&httpRequest.Name, "name", httpRequest.Name, "a name for this request (useful when persisting responses)")
-
-	FetchCmd.MarkFlagsMutuallyExclusive("file", "url")
 }
 
 type FetchMode string
@@ -88,6 +95,6 @@ const (
 
 var (
 	body        []byte
-	httpRequest schema.Request = schema.Request{Method: "GET"}
+	httpRequest schema.Request = schema.Request{Method: "GET", Scheme: "http"}
 	fetchMode   FetchMode
 )

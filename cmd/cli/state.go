@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"time"
 
 	toolkit "github.com/oleoneto/go-toolkit/cli"
@@ -45,7 +46,7 @@ func DatabaseConnect(config, filename string) {
 	filepath := fmt.Sprintf("%s/%s", *&config, filename)
 
 	var err error
-	database, err = dbsql.ConnectDatabase(dbsql.DBConnectOptions{
+	httpyFlags.database, err = dbsql.ConnectDatabase(dbsql.DBConnectOptions{
 		VerboseLogging: state.Flags.VerboseLogging,
 		Filename:       filepath,
 	})
@@ -56,13 +57,13 @@ func DatabaseConnect(config, filename string) {
 
 	ctx := context.TODO()
 
-	row := database.QueryRowContext(
+	row := httpyFlags.database.QueryRowContext(
 		ctx,
 		`SELECT s.name FROM sqlite_schema s WHERE s.type = 'table' AND s.name = 'responses' LIMIT 1`,
 	)
 
 	if errors.Is(row.Scan(nil), sql.ErrNoRows) {
-		if _, err = database.ExecContext(ctx, string(sqlSchema)); err != nil {
+		if _, err = httpyFlags.database.ExecContext(ctx, string(httpyFlags.sqlSchema)); err != nil {
 			panic(err)
 		}
 	}
@@ -75,18 +76,27 @@ type OutputFormat struct{ *toolkit.FlagEnum }
 // - json
 // - yaml
 func (f *OutputFormat) ProcessResponseOptions() schema.ProcessingOptions {
+	var persistenceFunc = func() func(ctx context.Context, s string, a ...any) (sql.Result, error) {
+		if httpyFlags.ephemeral {
+			return nil
+		}
+
+		return httpyFlags.database.ExecContext
+	}()
+
 	switch f.FlagEnum.String() {
-	case "yaml":
+	case "silent":
 		return schema.ProcessingOptions{
-			SQLPersistenceFunc: database.ExecContext,
-			BodyMarshalFunc:    schema.BodyMarshalFunc,
-			Plugins:            plugins,
+			SQLPersistenceFunc: nil,
+			BodyMarshalFunc:    nil,
+			Plugins:            httpyFlags.plugins,
 		}
 	default:
 		return schema.ProcessingOptions{
-			SQLPersistenceFunc: database.ExecContext,
+			SQLPersistenceFunc: persistenceFunc,
 			BodyMarshalFunc:    schema.BodyMarshalFunc,
-			Plugins:            plugins,
+			Plugins:            httpyFlags.plugins,
+			ShowResponseBody:   true,
 		}
 	}
 }
@@ -125,4 +135,17 @@ func newConfig(dburl string) (string, error) {
 	}
 
 	return configPath, err
+}
+
+type HTTPyFlags struct {
+	timeout time.Duration
+	plugins map[string]reflect.Value
+
+	configDir string
+
+	database   dbsql.SqlBackend
+	dbFilePath *string
+	sqlSchema  []byte
+
+	ephemeral bool
 }

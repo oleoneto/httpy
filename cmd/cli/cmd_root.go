@@ -10,7 +10,6 @@ import (
 	toolkit "github.com/oleoneto/go-toolkit/cli"
 	"github.com/oleoneto/go-toolkit/helpers"
 	"github.com/oleoneto/httpy/pkg"
-	"github.com/oleoneto/httpy/pkg/dbsql"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -20,16 +19,16 @@ var entrypoint = "httpy"
 var RootCmd = &cobra.Command{
 	Use:              entrypoint,
 	Short:            "HTTPy, a CLI tool for programmatically managing collections of HTTP requests",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) { DatabaseConnect(configDir, *dbFilePath) },
+	PersistentPreRun: func(cmd *cobra.Command, args []string) { DatabaseConnect(httpyFlags.configDir, *httpyFlags.dbFilePath) },
 	Run:              func(cmd *cobra.Command, args []string) { cmd.Help() },
 }
 
 func Execute(config pkg.CLIConfig) error {
-	plugins = config.Plugins
-	sqlSchema = config.SQLSchema
+	httpyFlags.plugins = config.Plugins
+	httpyFlags.sqlSchema = config.SQLSchema
 
 	if config.DefaultTimeout != nil {
-		globalTimeout = *config.DefaultTimeout
+		httpyFlags.timeout = *config.DefaultTimeout
 	}
 
 	return RootCmd.Execute()
@@ -53,7 +52,7 @@ func init() {
 
 	// Config
 	cobra.OnInitialize(func() {
-		configDir, _ = newConfig(*dbFilePath)
+		httpyFlags.configDir, _ = newConfig(*httpyFlags.dbFilePath)
 	})
 
 	RootCmd.AddCommand(VersionCmd)
@@ -65,9 +64,10 @@ func init() {
 	RootCmd.PersistentFlags().VarP(state.Flags.OutputFormat, "output", "o", "output format")
 
 	// RootCmd.PersistentFlags().VarP(dbAdapter, "db-adapter", "a", "database adapter")
-	RootCmd.PersistentFlags().StringVar(&configDir, "config-dir", configDir, "config directory")
-	RootCmd.PersistentFlags().StringVar(dbFilePath, "db-url", *dbFilePath, "database url")
+	RootCmd.PersistentFlags().StringVar(&httpyFlags.configDir, "config-dir", httpyFlags.configDir, "config directory")
+	RootCmd.PersistentFlags().StringVar(httpyFlags.dbFilePath, "db-url", *httpyFlags.dbFilePath, "database url")
 	RootCmd.PersistentFlags().BoolVar(&state.Flags.TimeExecutions, "time", state.Flags.TimeExecutions, "time executions")
+	RootCmd.PersistentFlags().BoolVar(&httpyFlags.ephemeral, "ephemeral", httpyFlags.ephemeral, "halt recording of any output")
 }
 
 var (
@@ -90,11 +90,10 @@ var (
 		},
 	}
 
-	globalTimeout         = 1 * time.Minute
-	plugins               = make(map[string]reflect.Value)
-	dbFilePath    *string = helpers.PointerTo(fmt.Sprintf("%s.sqlite3", entrypoint))
-	sqlSchema     []byte
-	database      dbsql.SqlBackend
-
-	configDir string = fmt.Sprintf("$HOME/.%s", entrypoint)
+	httpyFlags = HTTPyFlags{
+		timeout:    1 * time.Minute,
+		plugins:    make(map[string]reflect.Value),
+		dbFilePath: helpers.PointerTo(fmt.Sprintf("%s.sqlite3", entrypoint)),
+		configDir:  fmt.Sprintf("$HOME/.%s", entrypoint),
+	}
 )
