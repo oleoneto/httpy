@@ -85,8 +85,8 @@ func (f *OutputFormat) ProcessResponseOptions() schema.ProcessingOptions {
 	switch f.FlagEnum.String() {
 	case "silent":
 		return schema.ProcessingOptions{
-			SQLPersistenceFunc: nil,
-			BodyMarshalFunc:    nil,
+			SQLPersistenceFunc: persistenceFunc,
+			BodyMarshalFunc:    schema.BodyMarshalFunc,
 			Plugins:            httpyFlags.plugins,
 		}
 	default:
