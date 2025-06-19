@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"reflect"
@@ -14,18 +15,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//go:embed schemas
+var schemas embed.FS
+
 var entrypoint = "httpy"
 
 var RootCmd = &cobra.Command{
-	Use:              entrypoint,
-	Short:            "HTTPy, a CLI tool for programmatically managing collections of HTTP requests",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) { DatabaseConnect(httpyFlags.configDir, *httpyFlags.dbFilePath) },
-	Run:              func(cmd *cobra.Command, args []string) { cmd.Help() },
+	Use:   entrypoint,
+	Short: "HTTPy, a CLI tool for programmatically managing collections of HTTP requests",
+	Run:   func(cmd *cobra.Command, args []string) { cmd.Help() },
 }
 
 func Execute(config pkg.CLIConfig) error {
 	httpyFlags.plugins = config.Plugins
-	httpyFlags.sqlSchema = config.SQLSchema
 
 	if config.DefaultTimeout != nil {
 		httpyFlags.timeout = *config.DefaultTimeout

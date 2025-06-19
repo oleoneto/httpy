@@ -16,6 +16,19 @@ var FetchCmd = &cobra.Command{
 	Short:     "Make HTTP requests",
 	ValidArgs: []string{"url"},
 	Args:      cobra.MaximumNArgs(1),
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		schema, err := schemas.ReadFile("schemas/fetch.sql")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		DatabaseConnect(DatabaseConfig{
+			Path:                    httpyFlags.configDir,
+			Filename:                *httpyFlags.dbFilePath,
+			MigrationAssertionQuery: `SELECT s.name FROM sqlite_schema s WHERE s.type = 'table' AND s.name = 'responses' LIMIT 1`,
+			MigrationExecQuery:      string(schema),
+		})
+	},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		fetchMode = func(cmd *cobra.Command) FetchMode {
 			if cmd.Flag("file").Changed {

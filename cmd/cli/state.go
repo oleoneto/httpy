@@ -42,8 +42,8 @@ func AfterHook(state toolkit.CommandState) func(cmd *cobra.Command, args []strin
 	}
 }
 
-func DatabaseConnect(config, filename string) {
-	filepath := fmt.Sprintf("%s/%s", *&config, filename)
+func DatabaseConnect(config DatabaseConfig) {
+	filepath := fmt.Sprintf("%s/%s", *&config.Path, config.Filename)
 
 	var err error
 	httpyFlags.database, err = dbsql.ConnectDatabase(dbsql.DBConnectOptions{
@@ -57,13 +57,11 @@ func DatabaseConnect(config, filename string) {
 
 	ctx := context.TODO()
 
-	row := httpyFlags.database.QueryRowContext(
-		ctx,
-		`SELECT s.name FROM sqlite_schema s WHERE s.type = 'table' AND s.name = 'responses' LIMIT 1`,
-	)
+	row := httpyFlags.database.QueryRowContext(ctx, config.MigrationAssertionQuery)
 
+	// MARK: Migrate initial schema for SQLite database
 	if errors.Is(row.Scan(nil), sql.ErrNoRows) {
-		if _, err = httpyFlags.database.ExecContext(ctx, string(httpyFlags.sqlSchema)); err != nil {
+		if _, err = httpyFlags.database.ExecContext(ctx, config.MigrationExecQuery); err != nil {
 			panic(err)
 		}
 	}
@@ -145,7 +143,12 @@ type HTTPyFlags struct {
 
 	database   dbsql.SqlBackend
 	dbFilePath *string
-	sqlSchema  []byte
 
 	ephemeral bool
+}
+
+type DatabaseConfig struct {
+	Path, Filename          string
+	MigrationAssertionQuery string // Query to check if database schema is up-to-date
+	MigrationExecQuery      string // Query to migrate/upgrade database schema
 }
